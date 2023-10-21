@@ -6,9 +6,7 @@ import com.scaler.tictactoe.models.BotDifficultyLevel;
 import com.scaler.tictactoe.models.Player;
 import com.scaler.tictactoe.models.PlayerType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,11 +15,11 @@ public class Main {
 
         System.out.println("what is the Dimension of the Board?");
         int dimension=sc.nextInt();
-
+        sc.nextLine();
         System.out.println("Do you want to have a bot in the game?");
         String isBot=sc.nextLine();
 
-        List<Player> players = new ArrayList<>();
+        Map<Character,Player> players = new HashMap<>();
 
         int numberOfPlayer = dimension - 1;
         if (isBot.charAt(0) == 'y') {
@@ -33,8 +31,12 @@ public class Main {
 
             System.out.println("What is the symbol of the player :");
             String symbol = sc.nextLine();
+            while(players.containsKey(symbol.charAt(0))){
+                System.out.println("Symbol already assigned to other player, Enter another");
+                symbol=sc.nextLine();
+            }
 
-            players.add(new Player(symbol.charAt(0),name, PlayerType.HUMAN));
+            players.put(symbol.charAt(0),new Player(symbol.charAt(0),name, PlayerType.HUMAN));
         }
 
         if (isBot.charAt(0) == 'y') {
@@ -43,8 +45,15 @@ public class Main {
 
             System.out.println("What is the symbol of the bot :");
             String symbol = sc.nextLine();
-            players.add(new Bot(symbol.charAt(0),name, PlayerType.BOT, BotDifficultyLevel.EASY));
+            while(players.containsKey(symbol.charAt(0))){
+                System.out.println("Symbol already assigned to other player, Enter another");
+                symbol=sc.nextLine();
+            }
+            players.put(symbol.charAt(0),new Bot(symbol.charAt(0),name, PlayerType.BOT, BotDifficultyLevel.EASY));
         }
+
+        //Now the player list is Complete. We can start the Game.
+
 
     }
 }

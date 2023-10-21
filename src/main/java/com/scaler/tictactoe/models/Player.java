@@ -6,6 +6,7 @@ public class Player {
     private PlayerType type;
 
     public Player(char symbol,String name,PlayerType type){
+
         this.symbol=symbol;
         this.name=name;
         this.type=type;
