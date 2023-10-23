@@ -4,16 +4,13 @@ import com.scaler.tictactoe.Exceptions.InvalidGameBuildException;
 import com.scaler.tictactoe.strategies.gamewinningstrategy.GameWinningStrategy;
 import com.scaler.tictactoe.strategies.gamewinningstrategy.OrderOfOneWinningStratergy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 //We will use builder pattern to create Object of game class
 public class Game {
     private Board board;
     private List<Player> players;
-    private List<Move> moves;
+    private LinkedList<Move> moves;
     private GameStatus gameStatus;
     private int nextPlayerIndex;
     private GameWinningStrategy gameWinningStrategy;
@@ -46,7 +43,7 @@ public class Game {
         return moves;
     }
 
-    public void setMoves(List<Move> moves) {
+    public void setMoves(LinkedList<Move> moves) {
         this.moves = moves;
     }
 
@@ -76,8 +73,8 @@ public class Game {
 
     public void makeNextMove() {
         Player player=players.get(nextPlayerIndex);
-        System.out.println("It is "+player.getName()+"'s turn");
         Move move=player.makeMove();
+        moves.add(move);
 
         int row=move.getCell().getRow();
         int col=move.getCell().getCol();
@@ -94,6 +91,21 @@ public class Game {
             System.out.println(player.getName()+" Wins the Game!!");
             gameStatus=GameStatus.ENDED;
         }
+    }
+
+    public void undo(){
+        Move move=moves.pop();
+
+        int row=move.getCell().getRow();
+        int col=move.getCell().getCol();
+        System.out.println("Undoing move at "+row+","+col);
+
+        board.getBoard().get(row)
+                .get(col).setPlayer(null);
+        board.getBoard().get(row)
+                .get(col).setCellState(CellState.EMPTY);
+
+        this.setNextPlayerIndex((--nextPlayerIndex)%(board.getBoard().size()-1));
     }
 
     /* This is static because otherwise you can't create a builder class without creating a game class
@@ -140,7 +152,7 @@ public class Game {
             Game game=new Game();
             game.setGameStatus(GameStatus.IN_PROGRESS);
             game.setBoard(new Board(Dimension));
-            game.setMoves(new ArrayList<>());
+            game.setMoves(new LinkedList<>());
             game.setPlayers(this.players);
             game.setNextPlayerIndex(0);
             game.setGameWinningStrategy(new OrderOfOneWinningStratergy(Dimension));

@@ -24,7 +24,7 @@ public class Main {
             numberOfPlayer = dimension - 2;
         }
 
-        //TODO player symobol validation
+        //TODO player symbol validation
         for (int i = 0; i < numberOfPlayer; i++) {
             System.out.println("What is the name of the player :");
             String name = sc.nextLine();
@@ -36,24 +36,37 @@ public class Main {
         }
 
         if (isBot.charAt(0) == 'y') {
-            System.out.println("What is the name of the bot :");
-            String name = sc.nextLine();
+            String name="BOT TicTacToe";
 
             System.out.println("What is the symbol of the bot :");
             String symbol = sc.nextLine();
-            players.add(new Bot(symbol.charAt(0),name, PlayerType.BOT, BotDifficultyLevel.EASY));
+            players.add(new Bot(symbol.charAt(0),name, BotDifficultyLevel.EASY));
         }
 
-        //Now the player list is Complete. We can start the Game.
-
+        //Now the player list is Complete. We will now create Game.
         GameController gameController=new GameController();
         Game game=gameController.createGame(dimension,players);
         gameController.displayBoard(game.getBoard());
-        System.out.println(game.getPlayers());
 
-        while (game.getGameStatus()==GameStatus.IN_PROGRESS){
-            game.makeNextMove();
-            game.displayBoard();
+        //Now we will run the Game.
+        while (gameController.getGameStatus(game)==GameStatus.IN_PROGRESS){
+            Player player=game.getPlayers().get(game.getNextPlayerIndex());
+            System.out.println("It is "+player.getName()+"'s turn");
+            System.out.println("What do want to do?");
+            System.out.println("1. Make a move\n2. Undo");
+            char choice=sc.nextLine().charAt(0);
+
+            switch (choice){
+                case '1':
+                  gameController.makeNextMove(game);
+                  break;
+                case '2':
+                    gameController.undo(game);
+                break;
+                default:
+                    System.out.println("Wrong choice! Please select from options above");
+            }
+            gameController.displayBoard(game.getBoard());
         }
     }
 }

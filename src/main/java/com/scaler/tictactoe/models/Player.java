@@ -45,6 +45,7 @@ public class Player {
         int col=sc.nextInt();
 
         Cell cell=new Cell(row,col);
+        cell.setPlayer(this);
 
         Move move=new Move();
         move.setCell(cell);
