@@ -1,5 +1,7 @@
 package com.scaler.tictactoe.models;
 
+import java.util.Scanner;
+
 public class Player {
     private char symbol;
     private String name;
@@ -33,5 +35,20 @@ public class Player {
 
     public void setType(PlayerType type) {
         this.type = type;
+    }
+
+    public Move makeMove() {
+        Scanner sc=new Scanner(System.in);
+
+        System.out.println("enter row and column");
+        int row=sc.nextInt();
+        int col=sc.nextInt();
+
+        Cell cell=new Cell(row,col);
+
+        Move move=new Move();
+        move.setCell(cell);
+        move.setPlayer(this);
+        return move;
     }
 }

@@ -1,9 +1,13 @@
 package com.scaler.tictactoe.models;
 
 import com.scaler.tictactoe.Exceptions.InvalidGameBuildException;
+import com.scaler.tictactoe.strategies.gamewinningstrategy.GameWinningStrategy;
+import com.scaler.tictactoe.strategies.gamewinningstrategy.OrderOfOneWinningStratergy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //We will use builder pattern to create Object of game class
 public class Game {
@@ -12,6 +16,15 @@ public class Game {
     private List<Move> moves;
     private GameStatus gameStatus;
     private int nextPlayerIndex;
+    private GameWinningStrategy gameWinningStrategy;
+
+    public GameWinningStrategy getGameWinningStrategy() {
+        return gameWinningStrategy;
+    }
+
+    public void setGameWinningStrategy(GameWinningStrategy gameWinningStrategy) {
+        this.gameWinningStrategy = gameWinningStrategy;
+    }
 
     public Board getBoard() {
         return board;
@@ -57,12 +70,57 @@ public class Game {
         return new Builder();
     }
 
+    public void displayBoard(){
+        board.display();
+    }
+
+    public void makeNextMove() {
+        Player player=players.get(nextPlayerIndex);
+        System.out.println("It is "+player.getName()+"'s turn");
+        Move move=player.makeMove();
+
+        int row=move.getCell().getRow();
+        int col=move.getCell().getCol();
+        System.out.println("player is making move to "+row+","+col);
+
+        board.getBoard().get(row)
+                .get(col).setPlayer(player);
+        board.getBoard().get(row)
+                .get(col).setCellState(CellState.FILLED);
+
+        this.setNextPlayerIndex((++nextPlayerIndex)%(board.getBoard().size()-1));
+
+        if(gameWinningStrategy.checkWinner(board,player,move.getCell())){
+            System.out.println(player.getName()+" Wins the Game!!");
+            gameStatus=GameStatus.ENDED;
+        }
+    }
+
     /* This is static because otherwise you can't create a builder class without creating a game class
     if you thought by making the getBuilder method only static why aren't we able to access builder object.
     Then think of builder object as a property of class Game. and just like any other property of a class
     you cant use it without first creating an object of the main class.
      */
     public static class Builder{
+
+        private int Dimension;
+
+        private List<Player> players;
+
+        private boolean isValid() {
+            return Dimension >= 3;
+
+            //TODO logic
+        }
+
+        List<Player> getPlayers() {
+            return players;
+        }
+
+        public Builder setPlayers(List<Player> players) {
+            this.players = players;
+            return this;
+        }
 
         public int getDimension() {
             return Dimension;
@@ -71,26 +129,6 @@ public class Game {
         public Builder setDimension(int dimension) {
             Dimension = dimension;
             return this;
-        }
-
-        public List<Player> getPlayers() {
-            return players;
-        }
-
-        public Builder setPlayers(List<Player> players) {
-            this.players = players;
-            return this;
-        }
-        private int Dimension;
-
-        private List<Player> players;
-
-        private boolean isValid() {
-            if(Dimension <3)
-                return false;
-
-            //TODO logic
-            return true;
         }
 
         public Game build() throws InvalidGameBuildException {
@@ -103,8 +141,9 @@ public class Game {
             game.setGameStatus(GameStatus.IN_PROGRESS);
             game.setBoard(new Board(Dimension));
             game.setMoves(new ArrayList<>());
-            game.setPlayers(new ArrayList<>());
+            game.setPlayers(this.players);
             game.setNextPlayerIndex(0);
+            game.setGameWinningStrategy(new OrderOfOneWinningStratergy(Dimension));
 
             return game;
         }

@@ -1,5 +1,6 @@
 package com.scaler.tictactoe.models;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,5 +30,19 @@ public class Board {
 
     public void setBoard(List<List<Cell>> board) {
         this.board = board;
+    }
+
+    public void display(){
+        for(int i=0;i< board.size();i++){
+            for(int j=0;j< board.size();j++){
+                if(board.get(i).get(j).getCellState().equals(CellState.EMPTY))
+                {
+                    System.out.print("|   |");
+                }
+                else
+                    System.out.print("| "+board.get(i).get(j).getPlayer().getSymbol()+" |");
+            }
+            System.out.println();
+        }
     }
 }
